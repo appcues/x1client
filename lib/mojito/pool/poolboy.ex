@@ -33,9 +33,12 @@ defmodule Mojito.Pool.Poolboy do
   defp do_request(pool, pool_key, request) do
     case Mojito.Pool.Poolboy.Single.request(pool, request) do
       {:error, %{reason: :checkout_timeout}} ->
-        {:ok, pid} = start_pool(pool_key)
-        Mojito.Pool.Poolboy.Single.request(pid, request)
-
+        case start_pool(pool_key) do
+          {:ok, pid} ->
+            Mojito.Pool.Poolboy.Single.request(pid, request)
+          error ->
+            error
+        end
       other ->
         other
     end
