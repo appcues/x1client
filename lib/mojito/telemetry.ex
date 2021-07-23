@@ -36,7 +36,8 @@ defmodule Mojito.Telemetry do
 
   * `[:mojito, :request, :stop]` after making a request
     - Measurements: `:system_time`, `:duration`
-    - Metadata: `:host`, `:port`, `:path`, `:method`
+    - Metadata: `:host`, `:port`, `:path`, `:method`, `:status_code` (This value
+        is otional. It includes the status code from a `Mojito.Response` struct)
 
   """
 

@@ -131,6 +131,10 @@ defmodule Mojito.Pool.Poolboy.Single do
 
           request(pool, %{valid_request | opts: new_request_opts})
 
+        {:ok, %Mojito.Response{status_code: status_code}} = response ->
+          Telemetry.stop(:request, start_time, Map.put(meta, :status_code, status_code))
+          response
+
         other ->
           Telemetry.stop(:request, start_time, meta)
           other
