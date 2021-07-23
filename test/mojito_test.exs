@@ -274,6 +274,23 @@ defmodule MojitoTest do
       )
     end
 
+    it "handles requests after a timeout when pooling" do
+      child_spec = Mojito.Pool.Poolboy.Single.child_spec(size: 1)
+      {:ok, pool_pid} = Supervisor.start_child(Mojito.Supervisor, child_spec)
+
+      assert(
+        {:error, %{reason: :timeout}} =
+          get("/wait?d=500", timeout: 1, pool: pool_pid)
+      )
+
+      Process.sleep(100)
+
+      assert(
+        {:ok, %{body: "Hello Alice!"}} =
+          get("?name=Alice", pool: pool_pid, timeout: 5000)
+      )
+    end
+
     it "handles requests after a timeout" do
       assert({:error, %{reason: :timeout}} = get("/wait?d=10", timeout: 1))
       Process.sleep(100)

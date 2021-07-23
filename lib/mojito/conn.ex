@@ -62,6 +62,16 @@ defmodule Mojito.Conn do
     do: {:error, %Error{message: "bad protocol #{inspect(proto)}"}}
 
   @doc ~S"""
+  Return true if the connection is http/1.1
+  """
+  def is_http11(conn) do
+    case conn.conn do
+      %Mint.HTTP1{} -> true
+      _ -> false
+    end
+  end
+
+  @doc ~S"""
   Initiates a request on the given connection.  Returns the updated Conn and
   a reference to this request (which is required when receiving pipelined
   responses).

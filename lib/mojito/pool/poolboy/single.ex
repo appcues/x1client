@@ -155,7 +155,9 @@ defmodule Mojito.Pool.Poolboy.Single do
 
               response
           after
-            new_timeout -> {:error, :timeout}
+            new_timeout ->
+              ConnServer.close_http11_connection(worker)
+              {:error, :timeout}
           end
 
         e ->

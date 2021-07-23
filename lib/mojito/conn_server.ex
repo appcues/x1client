@@ -33,6 +33,13 @@ defmodule Mojito.ConnServer do
   end
 
   @doc ~S"""
+  Closes the underlying connection if its a HTTP/1.1 connection.
+  """
+  def close_http11_connection(server_pid) do
+    GenServer.call(server_pid, :close_http11_connection)
+  end
+
+  @doc ~S"""
   Initiates a request.  The `reply_to` pid will receive the response in a
   message of the format `{:ok, %Mojito.Response{}} | {:error, any}`.
   """
@@ -70,6 +77,14 @@ defmodule Mojito.ConnServer do
       {:reply, :ok, state}
     else
       err -> {:reply, err, close_connections(state)}
+    end
+  end
+
+  def handle_call(:close_http11_connection, _from, state) do
+    if Conn.is_http11(state.conn) do
+      {:reply, :ok, close_connections(state)}
+    else
+      {:reply, :ok, state}
     end
   end
 
